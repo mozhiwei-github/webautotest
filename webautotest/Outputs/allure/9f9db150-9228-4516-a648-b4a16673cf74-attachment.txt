@@ -1,0 +1,2 @@
+WARNING  selenium.webdriver.common.selenium_manager:selenium_manager.py:133 The chromedriver version (114.0.5735.90) detected in PATH at E:\Python3.11\chromedriver.exe might not be compatible with the detected chrome version (115.0.5790.171); currently, chromedriver 115.0.5790.170 is recommended for chrome 115.*, so it is advised to delete the driver in PATH and retry
+INFO     root:log.py:79 打开网页：https://www.meizu.cn/

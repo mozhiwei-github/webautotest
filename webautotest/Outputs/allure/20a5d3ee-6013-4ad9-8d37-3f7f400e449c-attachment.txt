@@ -1,0 +1,2 @@
+INFO     root:log.py:79 打开网页：https://www.meizu.cn
+ERROR    root:log.py:111 等待出错，err:'WebDriver' object has no attribute 'excute_script'

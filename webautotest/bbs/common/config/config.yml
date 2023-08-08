@@ -1,0 +1,9 @@
+bbs: #项目目录
+  path: "run_test.py" # 测试启动脚本
+  desc: "bbs-web" # 项目描述
+  kvm_task: "" # kvm任务id
+  brach: "master" # 项目所在分支
+  cases:
+    - param: "TestCases/base_cases/test_bbsweb.py" # 测试用例文件相对项目目录的路径（名称唯一标识）
+      desc: "" # 测试用例名称
+

@@ -1,0 +1,1 @@
+{"name": "test_bbsweb", "status": "skipped", "description": "\n        step1: open windows test\n        ", "start": 1691495926000, "stop": 1691495926000, "uuid": "fd6352b6-91c9-4900-9094-68f2a85e1d07", "testCaseId": "542b8a925086a8f663285d92848c7c8f", "fullName": "bbs.TestCases.base_cases.test_bbsweb.TestBbsWeb#test_bbsweb"}
