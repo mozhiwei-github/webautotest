@@ -6,9 +6,6 @@ import requests
 import os
 import allure
 
-
-
-
 screen_temp_pic_name = os.path.join(logs_file, "origin_pic.png")
 
 def try_import(module_name, element_name=None):

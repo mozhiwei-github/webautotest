@@ -1,0 +1,4 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Tue Aug 08 22:14:48 CST 2023","Tue Aug 08 22:14:51 CST 2023","3347","bbs.TestCases.base_cases","test_bbsweb","TestBbsWeb","","","bbs-web-test","
+        step1: open windows test
+        "

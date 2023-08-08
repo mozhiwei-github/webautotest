@@ -8,12 +8,15 @@ from bbs.common.contants import EnvVar
 def run_pytest(case_list, serve, generate):
     file_path = os.path.abspath(os.path.dirname(__file__))
     # allure报告
-    allure_attach_path = os.path.join("Outputs", "allure")
-    allure_html_path = os.path.join("Outputs", "report")
-    allure_absolute_path = os.path.join(file_path, allure_attach_path)
+    allure_attach_path = os.path.join(file_path, "Outputs", "allure")
+    allure_html_path = os.path.join(file_path, "Outputs", "report")
+    allure_absolute_path = os.path.join(file_path, "Outputs", "allure")
     if os.path.exists(allure_absolute_path):
         for file in os.listdir(allure_absolute_path):
             os.remove(os.path.join(allure_absolute_path, file))
+    if os.path.exists(allure_html_path):
+        for file in os.listdir(allure_html_path):
+            os.remove(os.path.join(allure_html_path, file))
 
     pytest_args = [
         '-s',
@@ -32,11 +35,12 @@ def run_pytest(case_list, serve, generate):
         # 存在generate参数，生成html报告
         if generate:
             log.log_info("*****生成allure html报告中*****")
-            os.system("allure generate %s -o %s" % (allure_attach_path, allure_html_path))
+            os.system("allure generate %s -o %s -c %s" % (allure_attach_path, allure_html_path, allure_html_path))
         # 存在serve参数，启动本地服务查看html报告
         if serve:
             log.log_info("*****启动allure报告服务中*****")
             os.system("allure serve %s" % allure_attach_path)
+
     else:
         log.log_info("allure日志目录为空")
 

@@ -1,0 +1,6 @@
+[2023-08-08 22:00:03,015][selenium_manager.py 133][WARNING]: The chromedriver version (114.0.5735.90) detected in PATH at E:\Python3.11\chromedriver.exe might not be compatible with the detected chrome version (115.0.5790.171); currently, chromedriver 115.0.5790.170 is recommended for chrome 115.*, so it is advised to delete the driver in PATH and retry
+[2023-08-08 22:00:08,586][log.py 79][INFO]: 打开网页：https://www.meizu.cn/
+[2023-08-08 22:00:08,599][log.py 79][INFO]: 魅族社区官网打开成功
+[2023-08-08 22:00:08,608][log.py 79][INFO]: 页面打开成功
+[2023-08-08 22:00:11,698][log.py 79][INFO]: *****生成allure html报告中*****
+[2023-08-08 22:00:12,745][log.py 79][INFO]: *****启动allure报告服务中*****

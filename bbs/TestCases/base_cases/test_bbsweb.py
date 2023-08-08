@@ -16,6 +16,7 @@ class TestBbsWeb(object):
         step1: open windows test
         """
     )
+    @allure.step('step1: open bbs web page')
     def test_bbsweb(self, chrome_driver_init):
         # proxy, driver = chrome_driver_init
         driver = chrome_driver_init
@@ -33,6 +34,7 @@ class TestBbsWeb(object):
 
 if __name__ == '__main__':
     # pytest.main(["-v", "-s", __file__])
-    allure_attach_path = os.path.join("Outputs", "allure")
+    file_path = os.path.abspath(os.path.dirname(__file__))
+    allure_attach_path = os.path.join(file_path, "Outputs", "allure")
     pytest.main(["-v", "-s", __file__, '--alluredir=%s' % allure_attach_path])
     os.system("allure serve %s" % allure_attach_path)
