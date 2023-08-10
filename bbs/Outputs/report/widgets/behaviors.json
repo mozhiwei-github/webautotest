@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"e14c048d8db0ab4d0fb153c57f4ec634","name":"bbs-web test","statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1}}]}
+{"total":1,"items":[{"uid":"400828b0a4d41dbc4b0ef0459ce041a7","name":"官网页面自动化测试epic","statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1}}]}

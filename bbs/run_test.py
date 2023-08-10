@@ -14,9 +14,9 @@ def run_pytest(case_list, serve, generate):
     if os.path.exists(allure_absolute_path):
         for file in os.listdir(allure_absolute_path):
             os.remove(os.path.join(allure_absolute_path, file))
-    if os.path.exists(allure_html_path):
-        for file in os.listdir(allure_html_path):
-            os.remove(os.path.join(allure_html_path, file))
+    # if os.path.exists(allure_html_path):
+    #     for file in os.listdir(allure_html_path):
+    #         os.remove(os.path.join(allure_html_path, file))
 
     pytest_args = [
         '-s',
@@ -57,6 +57,7 @@ if __name__ == '__main__':
                         help="是否以allure服务形式查看报告，ps：需要本机已经安装allure命令")
     parser.add_argument("-g", "--generate", action='store_true',
                         help="是否生成allure报告。ps：需本机已经安装allure命令")
+    # TODO:--clean
     # parser.add_argument("--smb", help="smb地址，使用smb中文件替换对应测试文件")
     args = parser.parse_args()
 

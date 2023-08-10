@@ -1,11 +1,13 @@
 import importlib
 import os
+import time
 from urllib.parse import urlsplit
-
-from selenium.common import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.webdriver.common.keys import Keys
 from bbs.common.log import log
+from selenium.webdriver import ActionChains
 
 
 """Selenium Web页面基类"""
@@ -144,6 +146,239 @@ class WebPage(object):
         return self.wait_util(lambda driver : driver.execute_script('return document.readyState;') == "complete",
                               timeout, message)
 
+    def wait_element(self, locator, timeout=10, multiple=False):
+        """
+        等待元素
+        @param locator: 元素定位器
+        @param timeout: 等待超时时间（秒）
+        @param multiple: 为True时返回包含多个元素的数组，默认为False 返回单个元素
+        @return:
+        """
+        if multiple:
+            method = EC.presence_of_all_elements_located(*locator)
+        else:
+            method = EC.presence_of_element_located(*locator)
+        return self.wait_util(method, timeout, f"{locator}元素")
+
+
+    def find_element(self, locator, element=None, multiple=False):
+        """
+        查找元素
+        @param locator: 元素定位器
+        @param element: 查找基准元素，为空时使用self.driver
+        @param multiple: 为True时返回包含多个元素的数组，默认为False 返回单个元素
+        @return:
+        """
+        if not element:
+            element = self.driver
+        try:
+            if multiple:
+                return element.find_elements(*locator)
+            else:
+                return element.find_element(*locator)
+        except NoSuchElementException as e:
+            return [] if multiple else None
+        except Exception as e:
+            assert not e, log.log_error(f"未找到指定元素：{e}")
+
+    @staticmethod
+    def sleep(seconds=0):
+        """
+        强制等待
+        @param seconds: 等待秒数
+        @return:
+        """
+        time.sleep(seconds)
+
+    def input_text(self, locator, text, select_all=False, element_name=None):
+        """
+        元素输入文本（输入前会先清空）
+        @param locator: 元素定位器
+        @param text: 输入文本
+        @param select_all: 输入前全选框内内容
+        @param element_name: 元素描述名称
+        @return:
+        """
+        ele = self.find_element(locator)
+        ele_name = element_name or locator
+        assert ele, f"查找元素 {ele_name} 失败"
+
+        if select_all: #使用ctrl + a 全选输入框
+            ele.send_keys(Keys.CONTROL + "a")
+        else:
+            ele.clear()
+        self.sleep(1)
+        ele.send_keys(text)
+        log.log_info(f"输入文本：{text}")
+        return ele
+
+    def get_text(self, locator):
+        """
+        获取元素的文本
+        @param locator:元素定位器
+        @return:
+        """
+        _text = self.find_element(locator).text
+        log.log_info(f"获取文本：{_text}")
+        return _text
+
+    def get_title(self):
+        """
+        获取网页标题
+        @return:
+        """
+        title = self.driver.title
+        log.log_info(f"获取网页标题{title}")
+        return title
+
+    def click(self, locator, element_name=None, element=None):
+        """
+        点击元素
+        @param locator:元素定位器
+        @param element_name: 元素描述名称
+        @param element: 页面元素对象
+        @return:
+        """
+        element = self.find_element(locator, element)
+        name = element_name or locator
+        assert element, self.log_error(f"未找到元素：{name}")
+        self.element_click(element, name)
+
+    def element_click(self, element, element_name, move_to_element=False, screenshot=False):
+        """
+        点击传入的元素
+        @param element:页面元素对象
+        @param element_name: 元素描述名称
+        @param move_to_element: 是否移动到元素位置
+        @param screenshot: 是否添加截图附件
+        @return:
+        """
+        try:
+            if move_to_element:
+                self.move_to_element(element, element_name)
+                self.sleep(0.5)
+
+            element.click()
+            log.log_info(f"点击{element_name}元素成功", screenshot=screenshot, shot_delay=1)
+        except ElementClickInterceptedException as e :
+            assert not e, self.log_error(f"点击{element_name}元素失败")
+        except Exception as e:
+            assert not e, self.log_error(f"点击{element_name}元素失败，err：{e}")
+
+    def move_to_element(self, element, element_name):
+        """
+        移动某指定元素
+        @param element:页面元素对象
+        @param element_name: 元素描述名称
+        @return:
+        """
+        ActionChains(self.driver).move_to_element(element).perform()
+        log.log_info(f"滚动到{element_name}元素位置")
+
+    def get_element_attribute(self, element, attribute_name):
+        """
+        获取页面元素属性值
+        @param element: 页面元素对象
+        @param sttribute_name:  属性名称
+        @return:
+        """
+        return element.get_attribute(attribute_name)
+
+    def refresh(self, wait_loaded=True):
+        """
+        浏览器刷新
+        @param wait_loaded: 执行后等待页面加载完成
+        @return:
+        """
+        self.driver.refresh()
+        self.log_info("点击浏览器刷新")
+        if wait_loaded:
+            self.wait_page_loaded()
+
+    def back(self, wait_loaded=True, expect_url=None):
+        """
+        浏览器返回
+        @param wait_loaded: 执行后等待页面加载完成
+        @param expect_url: 执行后预期url
+        @return:
+        """
+        self.driver.back()
+        self.log_info("点击浏览器返回")
+        if expect_url:
+            assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
+            self.log.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
+
+    def forward(self, wait_loaded=True, expect_url=None):
+        """
+        浏览器前进
+        @param wait_loaded: 执行后等待页面加载完成
+        @param expect_url: 执行后预期Url
+        @return:
+        """
+        self.driver.forward()
+        self.log_info("点击浏览器前进")
+        if wait_loaded:
+            self.wait_page_loaded()
+        if expect_url:
+            assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
+            self.log_info(f"浏览器前进后页面Url校验成功：{expect_url}")
+
+    def page_scroll_to_view(self, item):
+        """
+        滚动页面至指定元素位置
+        @param item: 需要滚动至的元素位置
+        @return:
+        """
+        js_comline = "arguments[0].scrollIntoView();"
+        self.driver.execute_script(js_comline, item)
+
+    def click_element_if_clickable(self, item, retries=1):
+        """
+        等待元素变成clickable后再进行点击
+        @param item: 元素
+        @param retries: 失败异常后重试次数
+        @return:
+        """
+        judge_num = 1
+        while EC.element_to_be_clickable(item):
+            try:
+                item.click()
+                break
+            except ElementClickInterceptedException as e:
+                if judge_num >= retries:
+                    assert not e, log.log_error(f"无法识别并点击打开指定元素，{e}", need_assert=False, driver=self.driver)
+                else:
+                    log.log_info(f"进行第 {judge_num} 次重试 ")
+                    self.sleep(2)
+                    judge_num += 1
+                    continue
+
+    @property
+    def get_source(self):
+        """获取页面源码"""
+        return self.driver.page_source
+
+    def verify_link_info(self, link_dsec, element, link_info, check_text=True, check_href=True):
+        """
+        校验链接信息
+        @param link_dsec: 链接描述
+        @param element: 链接元素
+        @param link_info: 预期链接信息
+        @param check_text: 是否校验text属性
+        @param check_href: 是否校验href属性
+        @return:
+        """
+        if check_text:
+            self.log_info(f"预期： {link_dsec}， 文本： {link_info['text']}")
+            self.log_info(f"实际： {link_dsec}， 文本： {element.text}")
+            assert element.text == link_info['text'], self.log_error(f"{link_dsec} 名称校验失败")
+        if check_href:
+            self.log_info(f"预期： {link_dsec}， 文本： {link_info['href']}")
+            self.log_info(f"实际： {link_dsec}， 文本： {element.get_attribute('href')}")
+            assert element.get_attribute('href') == link_info['href'], self.log_error(f"{link_dsec} 链接校验失败")
+
+        self.log_info(f"{link_dsec} 校验成功")
+
 
     def log_info(self, msg, log_only=False, screenshot=False, attach=True, compress_rate=0.7, shot_delay=0):
         """
@@ -189,3 +424,17 @@ class WebPage(object):
             driver = None
 
         log.log_pass(msg, attach=attach, driver=driver, compress_rate=compress_rate)
+
+    def get_page_shot(self, shot_name):
+        """
+        根据文件名称获取页面截图文件
+        @param shot_name: 截图文件名
+        @return:
+        """
+        page_shot_dir = os.path.join(os.path.dirname(self.file_dir), "PageShot", self.filename)
+        assert os.path.exists(page_shot_dir), "读取页面截图文件夹失败"
+
+        page_shot_path = os.path.join(page_shot_dir, shot_name)
+        assert os.path.exists(page_shot_path), "获取页面截图文件路径失败"
+
+        return page_shot_path

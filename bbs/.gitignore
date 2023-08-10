@@ -1,0 +1,6 @@
+Outputs/
+logs/
+.pytest_cache/
+
+
+server.log
