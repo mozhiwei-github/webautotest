@@ -8,6 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from bbs.common.log import log
 from selenium.webdriver import ActionChains
+from bbs.utils import back_to_original_window
 
 
 """Selenium Web页面基类"""
@@ -304,9 +305,23 @@ class WebPage(object):
         """
         self.driver.back()
         self.log_info("点击浏览器返回")
+        if wait_loaded:
+            self.wait_page_loaded()
         if expect_url:
             assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
-            self.log.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
+            self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
+
+    def back_to_first_window(self, original_window=None, expect_url=None):
+        """
+        返回上一层页面
+        @param original_window: 原始窗口句柄ID
+        @return:
+        """
+        back_to_original_window(self.driver, original_window)
+        self.log_info("返回原始标签页")
+        if expect_url:
+            assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
+            self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
 
     def forward(self, wait_loaded=True, expect_url=None):
         """

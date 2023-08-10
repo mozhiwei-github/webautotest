@@ -20,6 +20,35 @@ def switch_to_new_window(driver, original_window):
         if window_handle != original_window:
             driver.switch_to.window(window_handle)
             break
+def back_to_original_window(driver, original_window, assert_handles=True, window_count=1, scroll_top=True):
+    """
+    关闭新标签页，切换回原始标签页
+    @param driver:  浏览器驱动driver
+    @param original_window: 原始窗口ID
+    @param assert_handles: 进行窗口数量断言检查
+    @param window_count: 窗口数量
+    @param scroll_top: 是否滚动到页面顶部
+    @return:
+    """
+    if len(driver.window_handles) > 1:
+        # 当前窗口句柄为原始窗口时，需要先切换至新标签页窗口
+        if driver.current_window_handle == original_window:
+            switch_to_new_window(driver, original_window)
+        # 关闭新标签页
+        driver.close()
+    # 切换回原始标签页
+    driver.switch_to_window(original_window)
+
+    # 是否进行窗口数量断言检查
+    if assert_handles:
+        assert len(driver.window_handles) == window_count, "窗口数量检查失败"
+
+    # 是否滚动到页面顶部
+    if scroll_top:
+        driver.execute_script("window.scrollTo(0, 0)")
+
+    time.sleep(1)
+
 
 @contextmanager
 def driver_step(step_name, driver, original_window=None, assume=True, clear_cookies=True, back_to_original=True):
@@ -105,7 +134,7 @@ def back_to_original_window(driver, original_window, assert_handles=True, window
         assert len(driver.window_handles) == window_count, "窗口数量检查失败"
     # 是否滚动到页面顶部
     if scroll_top:
-        driver.excute_script("window.scrollTo(0,0)")
+        driver.execute_script("window.scrollTo(0,0)")
     time.sleep(1)
 
 def driver_get_reload(driver, base_url, retries=1):

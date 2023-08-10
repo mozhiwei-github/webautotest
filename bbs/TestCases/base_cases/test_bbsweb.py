@@ -37,9 +37,10 @@ class TestBbsWeb(object):
             log.log_info("页面打开成功")
 
         with driver_step("step2: 官网首页顶部栏点击跳转验证", driver):
-            if not bbs_page.click_top_element(TopElement.STORE.value):
-                log.log_info(f"官网首页顶部栏点击{TopElement.STORE.value}跳转验证Failture")
-            log.log_info(f"官网首页顶部栏点击{TopElement.STORE.value}跳转验证Successful")
+            if not bbs_page.click_top_element(original_window=original_window):
+                log.log_error("官网首页顶部栏点击跳转验证Failture")
+            log.log_info("官网首页顶部栏点击跳转验证Successful")
+
 
 
 
