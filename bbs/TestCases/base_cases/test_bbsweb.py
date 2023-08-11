@@ -15,11 +15,11 @@ class TestBbsWeb(object):
     @allure.story('官网页面自动化测试story')
     @allure.description(
         """
-        step1: 官网页面打开验证
-        step2: 官网首页顶部栏点击跳转验证
+        sub-step1: 官网页面打开验证
+        sub-step2: 官网首页顶部栏点击跳转验证
         """
     )
-    @allure.step('step1: 官网页面打开验证')
+    @allure.step('step1: 官网页面基础用例验证')
     def test_bbsweb(self, chrome_driver_init):
         # proxy, driver = chrome_driver_init
         driver = chrome_driver_init
@@ -28,18 +28,30 @@ class TestBbsWeb(object):
         # test_url = "https://www.meizu.cn/"
         PageUrl = os.environ.get("PageUrl")
         allure.dynamic.title(f"官网自动化测试：{PageUrl}")
-
-        with driver_step("step1: 官网页面打开验证", driver):
+        with driver_step("sub-step1: 官网页面打开验证", driver):
             # bbs_page = WebPage(driver, pageurl=test_url, pagename="魅族社区官网")
             bbs_page = BbsWebpage(driver)
             original_window = driver.current_window_handle
             driver_wait_until(driver, EC.title_is("魅族社区-魅族官网论坛-魅族智能手机官方交流平台"))
             log.log_info("页面打开成功")
 
-        with driver_step("step2: 官网首页顶部栏点击跳转验证", driver):
+        with driver_step("sub-step2: 官网首页顶部栏点击跳转验证", driver):
             if not bbs_page.click_top_element(original_window=original_window):
                 log.log_error("官网首页顶部栏点击跳转验证Failture")
             log.log_info("官网首页顶部栏点击跳转验证Successful")
+
+        with driver_step("sub-step3: 官网首页顶部热门事件点击跳转验证", driver):
+            if not bbs_page.click_hotevent(original_window=original_window):
+                log.log_error("官网首页顶部热门事件点击跳转验证Failure")
+            log.log_info("官网首页顶部热门事件点击跳转验证Successful")
+
+        with driver_step("sub-step4: 官网首页热门话题点击任一跳转验证", driver):
+            if not bbs_page.click_hottopic(original_window=original_window):
+                log.log_error("官网首页热门话题点击任一跳转验证Failure")
+            log.log_info("官网首页热门话题点击任一跳转验证Successful")
+
+
+
 
 
 

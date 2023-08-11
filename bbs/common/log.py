@@ -115,13 +115,13 @@ class Log(object):
         header = str(time.strftime('%H:%M:%S', time.localtime(time.time()))) + " ERROR:"
         self._marklog(header + msg)
         # 出现error时截图并添加到allure报告中
-        if attach:
-            if driver:
-                from bbs.common.utils import attach_driver_screenshot
-                # attach_driver_screenshot(driver, msg, compress_rate=1.0)
-            else:
-                from bbs.common.utils import attach_screenshot
-                # attach_screenshot(msg, compress_rate=1.0)
+        # if attach:
+        #     if driver:
+        #         from bbs.common.utils import attach_driver_screenshot
+        #         # attach_driver_screenshot(driver, msg, compress_rate=1.0)
+        #     else:
+        #         from bbs.common.utils import attach_screenshot
+        #         # attach_screenshot(msg, compress_rate=1.0)
 
         if need_assert:
             assert False, msg

@@ -117,7 +117,7 @@ class WebPage(object):
             self.driver_wait_dict[timeout] = _wait
         return _wait
 
-    def wait_util(self, method, timeout=10, message=''):
+    def wait_util(self, method, timeout=10, message='', wait_time=0):
         """
         根据提供的方法等待直至元素或超时
         :param method:元素查找方法
@@ -131,21 +131,27 @@ class WebPage(object):
             result = _wait.until(method, message)
             if message:
                 log.log_info(f"等待{message}完成")
+            if not wait_time == 0:
+                time.sleep(wait_time)
             return result
         except TimeoutException as e:
             assert not e, self.log_error(f"等待{message}超时")
         except Exception as e:
             assert not e, self.log_error(f"等待{message}出错，err:{e}")
 
-    def wait_page_loaded(self, timeout=10, message=''):
+    def wait_page_loaded(self, timeout=10, message='', time_wait=0):
         """
         等待页面加载完成
         :param timeout:等待超时时间（秒）
         :param message: 描述信息
         :return:
         """
-        return self.wait_util(lambda driver : driver.execute_script('return document.readyState;') == "complete",
+        if time_wait == 0:
+            return self.wait_util(lambda driver : driver.execute_script('return document.readyState;') == "complete",
                               timeout, message)
+        return self.wait_util(lambda driver : driver.execute_script('return document.readyState;') == "complete",
+                              timeout, message, time_wait)
+
 
     def wait_element(self, locator, timeout=10, multiple=False):
         """
@@ -213,13 +219,17 @@ class WebPage(object):
         log.log_info(f"输入文本：{text}")
         return ele
 
-    def get_text(self, locator):
+    def get_text(self, locator, element=None):
         """
         获取元素的文本
         @param locator:元素定位器
+        @param element: 元素基准
         @return:
         """
-        _text = self.find_element(locator).text
+        if not element:
+            element = self.driver
+
+        _text = element.find_element(*locator).text
         log.log_info(f"获取文本：{_text}")
         return _text
 
@@ -347,7 +357,7 @@ class WebPage(object):
         js_comline = "arguments[0].scrollIntoView();"
         self.driver.execute_script(js_comline, item)
 
-    def click_element_if_clickable(self, item, retries=1):
+    def click_element_if_clickable(self, item, retries=1, element_name=None):
         """
         等待元素变成clickable后再进行点击
         @param item: 元素
@@ -361,7 +371,7 @@ class WebPage(object):
                 break
             except ElementClickInterceptedException as e:
                 if judge_num >= retries:
-                    assert not e, log.log_error(f"无法识别并点击打开指定元素，{e}", need_assert=False, driver=self.driver)
+                    assert not e, log.log_error(f"无法识别并点击打开指定元素{element_name}，{e}", need_assert=False, driver=self.driver)
                 else:
                     log.log_info(f"进行第 {judge_num} 次重试 ")
                     self.sleep(2)

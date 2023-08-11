@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Thu Aug 10 22:22:03 CST 2023","Thu Aug 10 22:22:31 CST 2023","28712","bbs.TestCases.base_cases","test_bbsweb","TestBbsWeb","","","官网自动化测试：https://www.meizu.cn/","
-        step1: 官网页面打开验证
-        step2: 官网首页顶部栏点击跳转验证
+"passed","Fri Aug 11 18:19:13 CST 2023","Fri Aug 11 18:19:24 CST 2023","10785","bbs.TestCases.base_cases","test_bbsweb","TestBbsWeb","","","官网自动化测试：https://www.meizu.cn/","
+        sub-step1: 官网页面打开验证
+        sub-step2: 官网首页顶部栏点击跳转验证
         "

@@ -1,6 +1,7 @@
 Outputs/
 logs/
 .pytest_cache/
-
+bbs/.pytest_cache/
+bbs/__pycache__/
 
 server.log
