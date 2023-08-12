@@ -3,12 +3,14 @@ import os
 import time
 from urllib.parse import urlsplit
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common import TimeoutException, NoSuchElementException, ElementClickInterceptedException
+from selenium.common import TimeoutException, NoSuchElementException, ElementClickInterceptedException, \
+    ElementNotInteractableException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from bbs.common.log import log
 from selenium.webdriver import ActionChains
 from bbs.utils import back_to_original_window
+from selenium.webdriver.common.by import By
 
 
 """Selenium Web页面基类"""
@@ -188,6 +190,8 @@ class WebPage(object):
         except Exception as e:
             assert not e, log.log_error(f"未找到指定元素：{e}")
 
+
+
     @staticmethod
     def sleep(seconds=0):
         """
@@ -219,7 +223,7 @@ class WebPage(object):
         log.log_info(f"输入文本：{text}")
         return ele
 
-    def get_text(self, locator, element=None):
+    def get_text(self, locator=None, element=None):
         """
         获取元素的文本
         @param locator:元素定位器
@@ -228,8 +232,10 @@ class WebPage(object):
         """
         if not element:
             element = self.driver
-
-        _text = element.find_element(*locator).text
+        if locator:
+            _text = element.find_element(*locator).text
+        else:
+            _text = element.text
         log.log_info(f"获取文本：{_text}")
         return _text
 
@@ -357,7 +363,7 @@ class WebPage(object):
         js_comline = "arguments[0].scrollIntoView();"
         self.driver.execute_script(js_comline, item)
 
-    def click_element_if_clickable(self, item, retries=1, element_name=None):
+    def click_element_if_clickable(self, item, retries=1, element_name=None, wait_time=2):
         """
         等待元素变成clickable后再进行点击
         @param item: 元素
@@ -369,12 +375,13 @@ class WebPage(object):
             try:
                 item.click()
                 break
-            except ElementClickInterceptedException as e:
+            # except ElementClickInterceptedException or ElementNotInteractableException as e:
+            except Exception as e:
                 if judge_num >= retries:
                     assert not e, log.log_error(f"无法识别并点击打开指定元素{element_name}，{e}", need_assert=False, driver=self.driver)
                 else:
                     log.log_info(f"进行第 {judge_num} 次重试 ")
-                    self.sleep(2)
+                    self.sleep(wait_time)
                     judge_num += 1
                     continue
 

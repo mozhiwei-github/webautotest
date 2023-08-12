@@ -50,6 +50,12 @@ class TestBbsWeb(object):
                 log.log_error("官网首页热门话题点击任一跳转验证Failure")
             log.log_info("官网首页热门话题点击任一跳转验证Successful")
 
+        with driver_step("sub-step5: 官网首页轮播位点击验证", driver):
+            if not bbs_page.click_slider(original_window=original_window):
+                log.log_error("官网首页点击任一轮播图跳转验证Failure")
+            log.log_info("官网首页点击任一轮播图跳转验证Successful")
+
+
 
 
 

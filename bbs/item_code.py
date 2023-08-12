@@ -19,3 +19,8 @@ class HotTopic(Enum):
     HOTTOPICLIST = '//li[@class="_ht_item_ont9d_11"]'
     NOMORE = '//ul[@class="_ht_card_wrap_ont9d_4 _no_showMore_ont9d_21"]'
     HASMORE = '//ul[@class="_ht_card_wrap_ont9d_4 _showMore_ont9d_18"]'
+
+@unique
+class TopSwiper(Enum):
+    TOPWSWIPERLIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div'
+    TOPWSWIPERACTIVELIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div[@class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active _slider_img_w_157cm_8"]'
