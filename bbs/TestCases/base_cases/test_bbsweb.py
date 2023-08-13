@@ -55,7 +55,15 @@ class TestBbsWeb(object):
                 log.log_error("官网首页点击任一轮播图跳转验证Failure")
             log.log_info("官网首页点击任一轮播图跳转验证Successful")
 
+        with driver_step("sub-step6: 官网首页展示模式切换点击验证", driver):
+            if not bbs_page.mode_switch():
+                log.log_error("官网首页展示模式切换点击验证Failure")
+            log.log_info("官网首页展示模式切换点击验证Successful")
 
+        with driver_step("sub-step7: 官网首页点击圈子打开圈子详情页", driver):
+            if not bbs_page.click_circle(original_window=original_window):
+                log.log_error("官网首页点击圈子打开圈子详情页Failure")
+            log.log_info("官网首页点击圈子打开圈子详情页Successful")
 
 
 

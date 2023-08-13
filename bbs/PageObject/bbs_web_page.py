@@ -6,7 +6,7 @@ from bbs.utils import driver_wait_until
 from selenium.webdriver.support import expected_conditions as EC
 from bbs.contants import MainUrl, TopElement
 from bbs.utils import back_to_original_window
-from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper
+from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper, ModeSwitch, Circle
 import random
 
 class BbsWebpage(WebPage):
@@ -122,12 +122,17 @@ class BbsWebpage(WebPage):
         self.sleep(1)
         return True
 
-    def click_slider(self, original_window):
+    def click_slider(self, original_window=None):
+        """
+        首页点击任一轮播图
+        @param original_window: 初始窗口句柄ID
+        @return:
+        """
         item_list = self.find_element((By.XPATH, TopSwiper.TOPWSWIPERLIST.value), multiple=True)
         try_time = len(item_list) * 2
         item_active_list = self.find_element((By.XPATH, TopSwiper.TOPWSWIPERACTIVELIST.value), multiple=True)
         item_active = random.choice(item_active_list)
-        self.click_element_if_clickable(item_active, retries=try_time, wait_time=0.8)
+        self.click_element_if_clickable(item_active, retries=try_time, wait_time=0.5)
         # self.click_element_if_clickable(item.find_element(
         #     By.XPATH, './div[@class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active _slider_img_w_157cm_8"]'), retries=20, wait_time=wait_time)
         if not self.wait_util(EC.number_of_windows_to_be(2), message="随机点击轮播图"):
@@ -136,6 +141,60 @@ class BbsWebpage(WebPage):
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
         return True
+
+    def mode_switch(self):
+        """
+        首页点击模式切换验证
+        @return:
+        """
+        current_mode = "DARK"
+        if not self.find_element((By.XPATH, ModeSwitch.DARKMODE.value)):
+            current_mode = "NORMAL"
+        self.log_info(f"当前页面展示模式为{current_mode}")
+        if not current_mode == "NORMAL":
+            self.element_click(element=self.find_element((By.XPATH, ModeSwitch.DARKMODE.value)),
+                               element_name=f"原始模式为{current_mode}, 预期切换为 NORMAL")
+            self.sleep(3)
+            if not self.find_element((By.XPATH, ModeSwitch.NORMALMODE.value)):
+                self.log_error(f"预期切换为 NORMAL Failure")
+            return True
+        self.element_click(element=self.find_element((By.XPATH, ModeSwitch.NORMALMODE.value)),
+                           element_name=f"原始模式为{current_mode}, 预期切换为 DARK")
+        self.sleep(3)
+        if not self.find_element((By.XPATH, ModeSwitch.DARKMODE.value)):
+            self.log_error(f"预期切换为 DARK Failure")
+        return True
+
+    def click_circle(self, original_window=None):
+        """
+        点击首页圈子打开圈子详情页
+        @param original_window: 初始窗口句柄 ID
+        @return:
+        """
+        self.page_scroll_to_view(self.find_element((By.XPATH, TopSwiper.TOPSWIPERVIEW.value)))
+        # self.sleep(2)
+        # self.scroll_page(200)
+        self.sleep(1)
+        if not self.find_element((By.XPATH, Circle.CIRCLESHOWMORE.value)):
+            self.element_click(self.find_element((By.XPATH, Circle.CICLEMOREBUTTON.value)), element_name="更多圈子展开按钮")
+        # self.wait_util(self.find_element((By.XPATH, Circle.CIRCLESHOWMORE.value)))
+        self.wait_util(EC.presence_of_element_located((By.XPATH, Circle.CIRCLESHOWMORE.value)))
+        circle_list = self.find_element((By.XPATH, Circle.CICLELIST.value), multiple=True)
+        circle = random.choice(circle_list)
+        circle_title = self.get_text(element=circle.find_element(By.XPATH, './/div[@class="_item_content1_v7l0m_2"]'))
+        self.element_click(circle, element_name=f"首页圈子：{circle_title}")
+        if not self.wait_util(EC.number_of_windows_to_be(2), message=f"首页点击圈子：{circle_title} 打开详情页"):
+            self.log_error(f"首页点击圈子：{circle_title} 打开详情页 Failure")
+        self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
+        self.sleep(1)
+        return True
+
+
+
+
+
+
+
 
 
 

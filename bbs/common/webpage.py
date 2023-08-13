@@ -470,3 +470,11 @@ class WebPage(object):
         assert os.path.exists(page_shot_path), "获取页面截图文件路径失败"
 
         return page_shot_path
+
+    def scroll_page(self, scroll_height):
+        """
+        滚动页面指定高度
+        @param scroll_height: 滚动的页面高度--像素点
+        @return:
+        """
+        self.driver.execute_script(f"window.scrollTo(0, {scroll_height});")
