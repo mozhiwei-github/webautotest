@@ -17,6 +17,13 @@ class TestBbsWeb(object):
         """
         sub-step1: 官网页面打开验证
         sub-step2: 官网首页顶部栏点击跳转验证
+        sub-step3: 官网首页顶部热门事件点击跳转验证
+        sub-step4: 官网首页热门话题点击任一跳转验证
+        sub-step5: 官网首页轮播位点击验证
+        sub-step6: 官网首页展示模式切换点击验证
+        sub-step7: 官网首页点击圈子打开圈子详情页
+        sub-step8: 官网首页点击人气用户打开用户主页
+        sub-step9: 官网首页点击文章列表打开文章详情页验证
         """
     )
     @allure.step('step1: 官网页面基础用例验证')
@@ -65,6 +72,15 @@ class TestBbsWeb(object):
                 log.log_error("官网首页点击圈子打开圈子详情页Failure")
             log.log_info("官网首页点击圈子打开圈子详情页Successful")
 
+        with driver_step("sub-step8: 官网首页点击人气用户打开用户主页", driver):
+            if not bbs_page.click_hotuser(original_window):
+                log.log_error("官网首页点击人气用户打开用户主页Failure")
+            log.log_info("官网首页点击人气用户打开用户主页Successful")
+
+        with driver_step("sub-step9: 官网首页点击文章列表打开文章详情页验证", driver):
+            if not bbs_page.click_article():
+                log.log_error("官网首页点击文章列表打开文章详情页验证Failure")
+            log.log_info("官网首页点击文章列表打开文章详情页验证Successful")
 
 
 

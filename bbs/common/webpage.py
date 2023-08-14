@@ -478,3 +478,10 @@ class WebPage(object):
         @return:
         """
         self.driver.execute_script(f"window.scrollTo(0, {scroll_height});")
+
+    def get_current_page_height(self):
+        """
+        获取当前所处页面高度
+        @return:
+        """
+        return self.driver.execute_script("return document.body.scrollHeight;")

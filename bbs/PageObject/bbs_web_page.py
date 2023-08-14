@@ -4,9 +4,9 @@ import os
 from selenium.webdriver.common.by import By
 from bbs.utils import driver_wait_until
 from selenium.webdriver.support import expected_conditions as EC
-from bbs.contants import MainUrl, TopElement
+from bbs.contants import MainUrl, TopElement, ListType
 from bbs.utils import back_to_original_window
-from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper, ModeSwitch, Circle
+from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper, ModeSwitch, Circle, HotUser,ArticleList
 import random
 
 class BbsWebpage(WebPage):
@@ -188,6 +188,123 @@ class BbsWebpage(WebPage):
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
         return True
+
+    def click_hotuser(self, original_window=None):
+        self.page_scroll_to_view(self.find_element((By.XPATH, Circle.CIRCLEVIEW.value)))
+        self.sleep(1)
+        self.scroll_page(scroll_height=self.get_current_page_height() + 200)
+        self.sleep(1)
+        user_list = self.find_element((By.XPATH, HotUser.HOTUSER.value), multiple=True)
+        # 展示数量兼容考虑，仅取中间五个中任意一个
+        user_list = user_list[0:5]
+        user = random.choice(user_list)
+        user_name = self.get_text(element=user.find_element(By.XPATH, './/div[@class="_content1_1qi0v_31"]'))
+        self.element_click(element=user, element_name=f"{user_name}")
+        self.sleep(1)
+        if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击打开用户：{user_name}主页"):
+            self.log_error(f"点击人气用户打开用户：{user_name}主页Failure")
+        self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
+        self.sleep(1)
+        return True
+
+    def click_article(self, list_type=None):
+        """
+        点击文章打开文章详情页
+        @param list_type: 列表类型
+        @return:
+        """
+        self.page_scroll_to_view(self.find_element((By.XPATH, HotUser.HOTUSERVIEW.value)))
+        self.sleep(1)
+        if not list_type:
+            current_type = self.get_current_listtype()
+            self.change_current_listtype(expect_type=current_type)
+            result = self.find_article_and_click(current_type)
+            if not result[0]:
+                self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+            # 剩下两个list_type
+            notactive_type_list = self.find_element((By.XPATH, ArticleList.ARTICLELIST.value), multiple=True)
+            # next_type = notactive_type_list[0]
+            for next_type in notactive_type_list:
+                next_type_title = self.get_text(element=next_type)
+                result = self.find_article_and_click(next_type_title)
+                if not result[0]:
+                    self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+            return True
+
+        elif list_type == ListType.RECOMMEND.value:
+            self.change_current_listtype(expect_type=ListType.RECOMMEND.value)
+        elif list_type == ListType.NOW.value:
+            self.change_current_listtype(expect_type=ListType.NOW.value)
+        elif list_type == ListType.HOT.value:
+            self.change_current_listtype(expect_type=ListType.HOT.value)
+        self.sleep(1)
+        result = self.find_article_and_click(list_type)
+        if not result[0]:
+            self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+        return True
+
+
+    def find_article_and_click(self, list_type=None):
+        """
+        寻找列表中的任意文章并点击
+        @param list_type: 列表类型
+        @return:
+        """
+        # find_aritle
+        article_list = self.find_element((By.XPATH, ArticleList.ARTICLELIST.value), multiple=True)
+        article = random.choice(article_list)
+        article_title = self.get_text(element=article.find_element(By.XPATH, './/div[@class="_it_title_18jbr_10"]'))
+        self.page_scroll_to_view(article)
+        self.sleep(2)
+        # page_scroll_to_view()方法会将指定文章高度置顶，导致后续操作可能会存在异常，故此处将其回滚些许高度
+        self.scroll_page(self.get_current_page_height()-150)
+        self.sleep(1)
+
+        # click_article
+        self.element_click(element=article, element_name=article_title)
+        if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击{list_type} 列表中的文章：{article_title}，打开文章详情页"):
+            return False, article_title
+        return True, article_title
+
+
+    def get_current_listtype(self):
+        """
+        获取当前列表类型
+        @return:
+        """
+        item = self.find_element((By.XPATH, ArticleList.LISTTYPEACTIVE.value))
+        return item.text
+
+    def change_current_listtype(self, expect_type=None):
+        """
+        切换列表为指定类型列表
+        @param expect_type: 预期切换的列表类型
+        @return:
+        """
+        self.page_scroll_to_view(self.find_element((By.XPATH, HotUser.HOTUSERVIEW.value)))
+        self.sleep(1)
+        current_type =self.get_current_listtype()
+        if current_type == expect_type:
+            return
+        if expect_type == "精选":
+            self.element_click(element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="精选""]')),
+                               element_name=ListType.RECOMMEND.value)
+            self.sleep(2)
+        elif expect_type == "此刻":
+            self.element_click(
+                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="此刻""]')),
+                element_name=ListType.NOW.value)
+            self.sleep(2)
+        elif expect_type == "热门":
+            self.element_click(
+                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="热门""]')),
+                element_name=ListType.HOT.value)
+            self.sleep(2)
+
+
+
+
+
 
 
 

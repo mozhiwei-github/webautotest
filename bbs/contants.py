@@ -22,3 +22,9 @@ class MainUrl(Enum):
     CARE = "https://care.meizu.com/"
     FLYME = "https://www.flyme.cn/"
     INTRODUCE = "https://www.meizu.cn/introduce/"
+
+@unique
+class ListType(Enum):
+    RECOMMEND = '精选'
+    NOW = '此刻'
+    HOT = '热门'

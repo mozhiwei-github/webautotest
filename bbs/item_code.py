@@ -39,3 +39,14 @@ class Circle(Enum):
     CICLEMOREBUTTON = '//div[@class="_new_circles_v7l0m_6"]//li[@class="_ht_more_v7l0m_14"]'
     CIRCLESHOWMORE = '//ul[@class="_card_wrap_v7l0m_26 _showMore_v7l0m_18"]'
     CIRCLEHASMORE = '//ul[@class="_card_wrap_v7l0m_26 _no_showMore_v7l0m_22"]'
+
+@unique
+class HotUser(Enum):
+    HOTUSER = '//div[@class="swiper-slide _slider_img_w_1qi0v_38"]'
+    HOTUSERVIEW = '//div[@class="_swiper_r_1qi0v_122 _swiper_icon_1qi0v_311"]'
+
+@unique
+class ArticleList(Enum):
+    LISTTYPEACTIVE = '//div[@class="_tab_item_19gkq_86 _active_tab_19gkq_108"]'
+    LISTTYPE = '//div[@class="_tab_item_19gkq_86 "]'
+    ARTICLELIST = '//li[@class="_item_18jbr_2"]'
