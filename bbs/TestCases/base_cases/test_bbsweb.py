@@ -78,7 +78,7 @@ class TestBbsWeb(object):
             log.log_info("官网首页点击人气用户打开用户主页Successful")
 
         with driver_step("sub-step9: 官网首页点击文章列表打开文章详情页验证", driver):
-            if not bbs_page.click_article():
+            if not bbs_page.click_article(original_window=original_window):
                 log.log_error("官网首页点击文章列表打开文章详情页验证Failure")
             log.log_info("官网首页点击文章列表打开文章详情页验证Successful")
 

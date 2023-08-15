@@ -471,17 +471,24 @@ class WebPage(object):
 
         return page_shot_path
 
-    def scroll_page(self, scroll_height):
+    def scroll_page(self, current_height=0, scroll_height=0):
         """
         滚动页面指定高度
         @param scroll_height: 滚动的页面高度--像素点
         @return:
         """
-        self.driver.execute_script(f"window.scrollTo(0, {scroll_height});")
+        self.driver.execute_script(f"window.scrollTo({current_height}, {scroll_height});")
+
+    def get_page_height(self):
+        """
+        获取页面高度
+        @return:
+        """
+        return self.driver.execute_script("return document.body.scrollHeight;")
 
     def get_current_page_height(self):
         """
         获取当前所处页面高度
         @return:
         """
-        return self.driver.execute_script("return document.body.scrollHeight;")
+        return self.driver.execute_script("return window.innerHeight;")

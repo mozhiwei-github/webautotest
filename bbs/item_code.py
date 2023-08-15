@@ -23,12 +23,14 @@ class HotTopic(Enum):
 @unique
 class TopSwiper(Enum):
     TOPSWIPERVIEW = '//div[@class="_swiper_r_157cm_266 _swiper_icon_157cm_239"]'
-    TOPWSWIPERLIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div'
-    TOPWSWIPERACTIVELIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div[@class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active _slider_img_w_157cm_8"]'
+    TOPSWIPERLIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div'
+    TOPSWIPERLISTNEW = '//div[contains(@class, "swiper-slide swiper-slide-duplicate")]'
+    TOPSWIPERACTIVELIST = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]/div[@class="swiper-wrapper"]/div[@class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active _slider_img_w_157cm_8"]'
+    TOPSWIPERWAY = '//div[@class="swiper swiper-initialized swiper-horizontal swiper-pointer-events _new_slider_157cm_3"]'
 
 @unique
 class ModeSwitch(Enum):
-    MODESWITCHBUTTON = '//span[@class="_slider_14m5i_25  _slider_1_14m5i_1085"]'
+    MODESWITCHBUTTON = '//span[@class="_slider_14m5i_25  _slider_2_14m5i_1088"]'
     DARKMODE = '//html[@class="dark bg-191b29"]'
     NORMALMODE = '//html[@class="bg-191b29"]'
 

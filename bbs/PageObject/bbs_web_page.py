@@ -33,6 +33,7 @@ class BbsWebpage(WebPage):
         self.log_info(f"官网首页顶部栏点击{TopElement.LOGO.value}跳转验证Successful")
 
 
+
         # if topelement_name == "社区":
         item = self.find_element((By.XPATH, TopElementItem.BBS.value))
         self.element_click(element=item, element_name=TopElement.BBS.value)
@@ -79,6 +80,7 @@ class BbsWebpage(WebPage):
         self.wait_page_loaded(message=f"等待{MainUrl.INTRODUCE.value}加载", time_wait=1)
         self.back(expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         self.log_info(f"官网首页顶部栏点击{TopElement.DOWNLOAD.value}跳转验证Successful")
         return True
 
@@ -98,6 +100,7 @@ class BbsWebpage(WebPage):
         self.wait_page_loaded(message=f"等待{MainUrl.STORE.value}加载", time_wait=1)
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         return True
 
     def click_hottopic(self, original_window=None):
@@ -120,6 +123,7 @@ class BbsWebpage(WebPage):
             self.log_error(f"首页点击热门话题{item_title}Failure")
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         return True
 
     def click_slider(self, original_window=None):
@@ -128,18 +132,21 @@ class BbsWebpage(WebPage):
         @param original_window: 初始窗口句柄ID
         @return:
         """
-        item_list = self.find_element((By.XPATH, TopSwiper.TOPWSWIPERLIST.value), multiple=True)
-        try_time = len(item_list) * 2
-        item_active_list = self.find_element((By.XPATH, TopSwiper.TOPWSWIPERACTIVELIST.value), multiple=True)
-        item_active = random.choice(item_active_list)
-        self.click_element_if_clickable(item_active, retries=try_time, wait_time=0.5)
-        # self.click_element_if_clickable(item.find_element(
-        #     By.XPATH, './div[@class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active _slider_img_w_157cm_8"]'), retries=20, wait_time=wait_time)
+        # TODO: 随机的方式点击轮播图---暂时没有找到识别的方法
+        # item_list = self.find_element((By.XPATH, TopSwiper.TOPSWIPERLISTNEW.value), multiple=True)
+        # try_max = len(item_list) * 4
+        # item = random.choice(item_list)
+        # self.click_element_if_clickable(item, retries=try_max, wait_time=0.5)
+
+        # TODO：暂时采用点击全局中点的方式点击
+        item = self.find_element((By.XPATH, TopSwiper.TOPSWIPERWAY.value))
+        self.element_click(element=item, element_name="首页轮播图区域")
         if not self.wait_util(EC.number_of_windows_to_be(2), message="随机点击轮播图"):
             self.log_error(f"首页点击任一轮播图Failure")
         self.wait_page_loaded(message="等待点击轮播图跳转页面加载", time_wait=2)
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         return True
 
     def mode_switch(self):
@@ -152,17 +159,18 @@ class BbsWebpage(WebPage):
             current_mode = "NORMAL"
         self.log_info(f"当前页面展示模式为{current_mode}")
         if not current_mode == "NORMAL":
-            self.element_click(element=self.find_element((By.XPATH, ModeSwitch.DARKMODE.value)),
+            self.element_click(element=self.find_element((By.XPATH, ModeSwitch.MODESWITCHBUTTON.value)),
                                element_name=f"原始模式为{current_mode}, 预期切换为 NORMAL")
             self.sleep(3)
             if not self.find_element((By.XPATH, ModeSwitch.NORMALMODE.value)):
                 self.log_error(f"预期切换为 NORMAL Failure")
             return True
-        self.element_click(element=self.find_element((By.XPATH, ModeSwitch.NORMALMODE.value)),
+        self.element_click(element=self.find_element((By.XPATH, ModeSwitch.MODESWITCHBUTTON.value)),
                            element_name=f"原始模式为{current_mode}, 预期切换为 DARK")
         self.sleep(3)
         if not self.find_element((By.XPATH, ModeSwitch.DARKMODE.value)):
             self.log_error(f"预期切换为 DARK Failure")
+        self.refresh()
         return True
 
     def click_circle(self, original_window=None):
@@ -187,6 +195,7 @@ class BbsWebpage(WebPage):
             self.log_error(f"首页点击圈子：{circle_title} 打开详情页 Failure")
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         return True
 
     def click_hotuser(self, original_window=None):
@@ -205,30 +214,35 @@ class BbsWebpage(WebPage):
             self.log_error(f"点击人气用户打开用户：{user_name}主页Failure")
         self.back_to_first_window(original_window, expect_url=MainUrl.BBS.value)
         self.sleep(1)
+        self.refresh()
         return True
 
-    def click_article(self, list_type=None):
+    def click_article(self, list_type=None, original_window=None):
         """
         点击文章打开文章详情页
         @param list_type: 列表类型
         @return:
         """
+        self.sleep(5) # 强制等待页面加载
         self.page_scroll_to_view(self.find_element((By.XPATH, HotUser.HOTUSERVIEW.value)))
-        self.sleep(1)
+        self.sleep(5)
         if not list_type:
             current_type = self.get_current_listtype()
             self.change_current_listtype(expect_type=current_type)
-            result = self.find_article_and_click(current_type)
+            result = self.find_article_and_click(current_type, original_window)
             if not result[0]:
                 self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
             # 剩下两个list_type
-            notactive_type_list = self.find_element((By.XPATH, ArticleList.ARTICLELIST.value), multiple=True)
+            notactive_type_list = self.find_element((By.XPATH, ArticleList.LISTTYPE.value), multiple=True)
             # next_type = notactive_type_list[0]
             for next_type in notactive_type_list:
                 next_type_title = self.get_text(element=next_type)
-                result = self.find_article_and_click(next_type_title)
+                self.change_current_listtype(expect_type=next_type_title)
+                self.sleep(3)
+                result = self.find_article_and_click(next_type_title, original_window)
                 if not result[0]:
                     self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+            self.refresh()
             return True
 
         elif list_type == ListType.RECOMMEND.value:
@@ -238,13 +252,13 @@ class BbsWebpage(WebPage):
         elif list_type == ListType.HOT.value:
             self.change_current_listtype(expect_type=ListType.HOT.value)
         self.sleep(1)
-        result = self.find_article_and_click(list_type)
+        result = self.find_article_and_click(list_type, original_window)
         if not result[0]:
             self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+        self.refresh()
         return True
 
-
-    def find_article_and_click(self, list_type=None):
+    def find_article_and_click(self, list_type=None, original_window=None):
         """
         寻找列表中的任意文章并点击
         @param list_type: 列表类型
@@ -254,18 +268,18 @@ class BbsWebpage(WebPage):
         article_list = self.find_element((By.XPATH, ArticleList.ARTICLELIST.value), multiple=True)
         article = random.choice(article_list)
         article_title = self.get_text(element=article.find_element(By.XPATH, './/div[@class="_it_title_18jbr_10"]'))
+        self.sleep(2)
+
         self.page_scroll_to_view(article)
         self.sleep(2)
-        # page_scroll_to_view()方法会将指定文章高度置顶，导致后续操作可能会存在异常，故此处将其回滚些许高度
-        self.scroll_page(self.get_current_page_height()-150)
-        self.sleep(1)
 
-        # click_article
         self.element_click(element=article, element_name=article_title)
+        self.sleep(1)
         if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击{list_type} 列表中的文章：{article_title}，打开文章详情页"):
             return False, article_title
+        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBS.value)
+        self.sleep(1)
         return True, article_title
-
 
     def get_current_listtype(self):
         """
@@ -282,24 +296,25 @@ class BbsWebpage(WebPage):
         @return:
         """
         self.page_scroll_to_view(self.find_element((By.XPATH, HotUser.HOTUSERVIEW.value)))
-        self.sleep(1)
+        self.sleep(2)
         current_type =self.get_current_listtype()
         if current_type == expect_type:
             return
         if expect_type == "精选":
-            self.element_click(element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="精选""]')),
+            self.element_click(element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 " and text()="精选"]')),
                                element_name=ListType.RECOMMEND.value)
             self.sleep(2)
         elif expect_type == "此刻":
             self.element_click(
-                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="此刻""]')),
+                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 " and text()="此刻"]')),
                 element_name=ListType.NOW.value)
             self.sleep(2)
         elif expect_type == "热门":
             self.element_click(
-                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 and text()="热门""]')),
+                element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 " and text()="热门"]')),
                 element_name=ListType.HOT.value)
             self.sleep(2)
+
 
 
 
