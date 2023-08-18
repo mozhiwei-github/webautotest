@@ -82,6 +82,16 @@ class TestBbsWeb(object):
                 log.log_error("官网首页点击文章列表打开文章详情页验证Failure")
             log.log_info("官网首页点击文章列表打开文章详情页验证Successful")
 
+        with driver_step("sub-step10: 官网首页搜索框点击推荐热词验证", driver):
+            if not bbs_page.click_search_random(original_window=original_window):
+                log.log_error("官网首页搜索框点击推荐热词验证Failure")
+            log.log_info("官网首页搜索框点击推荐热词验证Successful")
+
+        with driver_step("sub-step11: 官网首页搜索框点击热词验证", driver):
+            if not bbs_page.click_search_hotword(original_window=original_window):
+                log.log_error("官网首页搜索框点击热词验证Failure")
+            log.log_info("官网首页搜索框点击热词验证Successful")
+
 
 
 

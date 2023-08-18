@@ -52,3 +52,10 @@ class ArticleList(Enum):
     LISTTYPEACTIVE = '//div[@class="_tab_item_19gkq_86 _active_tab_19gkq_108"]'
     LISTTYPE = '//div[@class="_tab_item_19gkq_86 "]'
     ARTICLELIST = '//li[@class="_item_18jbr_2"]'
+
+@unique
+class Search(Enum):
+    SEARCHINPUT = '//input[@id="common_header_input"]'
+    SEARCHRANDOMLIST = '//ul[@class="_item_wrap_1d6m3_31"]/li[@class="_item_1d6m3_31"]'
+    SEARCHHOTLIST = '//div[@class="_wrap_3ajev_10"]/div[@class="_item_3ajev_15"]'
+    SEARCHCHANGEBUTTON = '//div[@class="_replace_1d6m3_25"]'

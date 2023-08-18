@@ -6,7 +6,7 @@ from bbs.utils import driver_wait_until
 from selenium.webdriver.support import expected_conditions as EC
 from bbs.contants import MainUrl, TopElement, ListType
 from bbs.utils import back_to_original_window
-from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper, ModeSwitch, Circle, HotUser,ArticleList
+from bbs.item_code import TopElementItem, TopHotEvent, HotTopic, TopSwiper, ModeSwitch, Circle, HotUser,ArticleList, Search
 import random
 
 class BbsWebpage(WebPage):
@@ -180,9 +180,8 @@ class BbsWebpage(WebPage):
         @return:
         """
         self.page_scroll_to_view(self.find_element((By.XPATH, TopSwiper.TOPSWIPERVIEW.value)))
-        # self.sleep(2)
+        self.sleep(2)
         # self.scroll_page(200)
-        self.sleep(1)
         if not self.find_element((By.XPATH, Circle.CIRCLESHOWMORE.value)):
             self.element_click(self.find_element((By.XPATH, Circle.CICLEMOREBUTTON.value)), element_name="更多圈子展开按钮")
         # self.wait_util(self.find_element((By.XPATH, Circle.CIRCLESHOWMORE.value)))
@@ -242,6 +241,7 @@ class BbsWebpage(WebPage):
                 result = self.find_article_and_click(next_type_title, original_window)
                 if not result[0]:
                     self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+            self.recovery_type_to_recommend()
             self.refresh()
             return True
 
@@ -277,7 +277,12 @@ class BbsWebpage(WebPage):
         self.sleep(1)
         if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击{list_type} 列表中的文章：{article_title}，打开文章详情页"):
             return False, article_title
-        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBS.value)
+        if list_type == "精选":
+            self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBS.value)
+        elif list_type == "此刻":
+            self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSNOW.value)
+        elif list_type == "热门":
+            self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSHOT.value)
         self.sleep(1)
         return True, article_title
 
@@ -314,6 +319,61 @@ class BbsWebpage(WebPage):
                 element=self.find_element((By.XPATH, '//div[@class="_tab_item_19gkq_86 " and text()="热门"]')),
                 element_name=ListType.HOT.value)
             self.sleep(2)
+
+    def recovery_type_to_recommend(self):
+        current_type = self.get_current_listtype()
+        if not current_type == ListType.RECOMMEND.value:
+            self.change_current_listtype(expect_type="精选")
+
+    def click_search_random(self, original_window=None):
+        """
+        点击搜索下拉框中的随机热词搜索
+        @param original_window:
+        @return:
+        """
+        self.scroll_to_page_top()
+        self.sleep(1)
+        self.element_click(element=self.find_element((By.XPATH, Search.SEARCHINPUT.value)),
+                           element_name="搜索框")
+        self.sleep(1)
+        # 顺便验证一下点击换一批按钮的交互
+        button_name = self.get_text(element=self.find_element((By.XPATH, Search.SEARCHCHANGEBUTTON.value)))
+        self.element_click(element=self.find_element((By.XPATH, Search.SEARCHCHANGEBUTTON.value)), element_name=button_name)
+        self.sleep(2)
+        random_wordlist = self.find_element((By.XPATH, Search.SEARCHRANDOMLIST.value), multiple=True)
+        random_item = random.choice(random_wordlist)
+        random_word = self.get_text(element=random_item)
+        self.element_click(element=random_item, element_name=random_word)
+        if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击随机搜索词：{random_word}，打开搜索结果页面"):
+            self.log_error(f"点击随机搜索词：{random_word}，打开搜索结果页面Failure")
+        self.sleep(2)
+        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSNOW.value)
+        self.sleep(1)
+        self.refresh()
+        return True
+
+    def click_search_hotword(self, original_window=None):
+        """
+        点击搜索下拉框中的热词搜索
+        @return:
+        """
+        self.scroll_to_page_top()
+        self.sleep(1)
+        self.element_click(element=self.find_element((By.XPATH, Search.SEARCHINPUT.value)),
+                           element_name="搜索框")
+        hot_word_list = self.find_element((By.XPATH, Search.SEARCHHOTLIST.value), multiple=True)
+        hot_word_item = random.choice(hot_word_list)
+        hot_word = self.get_text(element=hot_word_item)
+        self.element_click(element=hot_word_item, element_name=hot_word)
+        if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击随机搜索词：{hot_word}，打开搜索结果页面"):
+            self.log_error(f"点击随机搜索词：{hot_word}，打开搜索结果页面Failure")
+        self.sleep(2)
+        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSNOW.value)
+        self.sleep(1)
+        self.refresh()
+        return True
+
+
 
 
 

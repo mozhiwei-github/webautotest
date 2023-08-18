@@ -335,6 +335,7 @@ class WebPage(object):
         """
         back_to_original_window(self.driver, original_window)
         self.log_info("返回原始标签页")
+        self.sleep(3)
         if expect_url:
             assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
             self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
@@ -492,3 +493,23 @@ class WebPage(object):
         @return:
         """
         return self.driver.execute_script("return window.innerHeight;")
+
+    def scroll_to_page_top(self):
+        """
+        直接滚动至页面顶部
+        @return:
+        """
+        return self.driver.execute_script("var q=document.documentElement.scrollTop=0")
+
+    def scroll_to_page_bottom(self):
+        """
+        直接滚动至页面底部
+        @return:
+        """
+        try:
+            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+        except Exception as e:
+            self.driver.execute_script("var q=document.documentElement.scrollTop=10000")
+        else:
+            for i in range(10):
+                self.driver.execute_script(f'document.documentElement.scrollTop={(i+1)*1000}')
