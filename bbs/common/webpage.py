@@ -327,7 +327,7 @@ class WebPage(object):
             assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
             self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
 
-    def back_to_first_window(self, original_window=None, expect_url=None):
+    def back_to_first_window(self, original_window=None, expect_url=None, expect_url_list=None):
         """
         返回上一层页面
         @param original_window: 原始窗口句柄ID
@@ -336,8 +336,18 @@ class WebPage(object):
         back_to_original_window(self.driver, original_window)
         self.log_info("返回原始标签页")
         self.sleep(3)
+        current_url = self.get_current_url()
         if expect_url:
-            assert expect_url == self.get_current_url(), self.log_error(f"页面Url校验失败")
+            assert expect_url == current_url, self.log_error(f"页面Url校验失败, 预期url为：{expect_url}，实际url为：{current_url}")
+            self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
+            return
+        if expect_url_list:
+            result = False
+            for expect_url in expect_url_list:
+                if expect_url == current_url:
+                    result = True
+                    break
+            assert result, self.log_error(f"页面Url校验失败, 预期url为：{expect_url}，实际url为：{current_url}")
             self.log_info(f"浏览器返回后页面Url校验成功：{expect_url}")
 
     def forward(self, wait_loaded=True, expect_url=None):

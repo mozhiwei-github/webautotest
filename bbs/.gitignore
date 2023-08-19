@@ -5,3 +5,5 @@ bbs/.pytest_cache/
 bbs/__pycache__/
 
 server.log
+
+bbs/common/__pycache__/

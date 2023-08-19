@@ -69,11 +69,11 @@ class Log(object):
                 if driver:
                     from bbs.common.utils import attach_driver_screenshot
                     time.sleep(shot_delay)
-                    # attach_driver_screenshot(driver, msg, compress_rate=compress_rate)
+                    attach_driver_screenshot(driver, msg, compress_rate=compress_rate)
                 elif screenshot:
                     from bbs.common.utils import attach_screenshot
                     time.sleep(shot_delay)
-                    # attach_screenshot(msg, compress_rate=compress_rate)
+                    attach_screenshot(msg, compress_rate=compress_rate)
                 else:
                     allure.attach(msg, msg)
         self.logger.info(msg)
@@ -92,10 +92,10 @@ class Log(object):
         if attach:
             if driver:
                 from bbs.common.utils import attach_driver_screenshot
-                # attach_driver_screenshot(driver, msg, compress_rate=compress_rate)
+                attach_driver_screenshot(driver, msg, compress_rate=compress_rate)
             else:
                 from bbs.common.utils import attach_screenshot
-                # attach_screenshot(msg, compress_rate=compress_rate)
+                attach_screenshot(msg, compress_rate=compress_rate)
 
     def log_error(self, msg, log_only=False, attach=True, need_assert=True, driver=None):
         """
@@ -115,13 +115,13 @@ class Log(object):
         header = str(time.strftime('%H:%M:%S', time.localtime(time.time()))) + " ERROR:"
         self._marklog(header + msg)
         # 出现error时截图并添加到allure报告中
-        # if attach:
-        #     if driver:
-        #         from bbs.common.utils import attach_driver_screenshot
-        #         # attach_driver_screenshot(driver, msg, compress_rate=1.0)
-        #     else:
-        #         from bbs.common.utils import attach_screenshot
-        #         # attach_screenshot(msg, compress_rate=1.0)
+        if attach:
+            if driver:
+                from bbs.common.utils import attach_driver_screenshot
+                attach_driver_screenshot(driver, msg, compress_rate=1.0)
+            else:
+                from bbs.common.utils import attach_screenshot
+                attach_screenshot(msg, compress_rate=1.0)
 
         if need_assert:
             assert False, msg

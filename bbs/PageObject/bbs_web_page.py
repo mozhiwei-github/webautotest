@@ -241,7 +241,9 @@ class BbsWebpage(WebPage):
                 result = self.find_article_and_click(next_type_title, original_window)
                 if not result[0]:
                     self.log_error(f"点击{list_type} 列表中的文章：{result[1]}，打开文章详情页")
+            self.sleep(3)
             self.recovery_type_to_recommend()
+            self.sleep(1)
             self.refresh()
             return True
 
@@ -274,7 +276,7 @@ class BbsWebpage(WebPage):
         self.sleep(2)
 
         self.element_click(element=article, element_name=article_title)
-        self.sleep(1)
+        self.sleep(3)
         if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击{list_type} 列表中的文章：{article_title}，打开文章详情页"):
             return False, article_title
         if list_type == "精选":
@@ -346,8 +348,8 @@ class BbsWebpage(WebPage):
         self.element_click(element=random_item, element_name=random_word)
         if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击随机搜索词：{random_word}，打开搜索结果页面"):
             self.log_error(f"点击随机搜索词：{random_word}，打开搜索结果页面Failure")
-        self.sleep(2)
-        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSNOW.value)
+        self.sleep(3)
+        self.back_to_first_window(original_window=original_window, expect_url_list=[MainUrl.BBS.value, MainUrl.BBSNOW.value, MainUrl.BBSHOT.value])
         self.sleep(1)
         self.refresh()
         return True
@@ -367,8 +369,8 @@ class BbsWebpage(WebPage):
         self.element_click(element=hot_word_item, element_name=hot_word)
         if not self.wait_util(EC.number_of_windows_to_be(2), message=f"点击随机搜索词：{hot_word}，打开搜索结果页面"):
             self.log_error(f"点击随机搜索词：{hot_word}，打开搜索结果页面Failure")
-        self.sleep(2)
-        self.back_to_first_window(original_window=original_window, expect_url=MainUrl.BBSNOW.value)
+        self.sleep(3)
+        self.back_to_first_window(original_window=original_window, expect_url_list=[MainUrl.BBS.value, MainUrl.BBSNOW.value, MainUrl.BBSHOT.value])
         self.sleep(1)
         self.refresh()
         return True

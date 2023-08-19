@@ -19,8 +19,8 @@ class TopElement(Enum):
 class MainUrl(Enum):
     STORE = "https://www.meizu.com/"
     BBS = "https://www.meizu.cn/"
-    BBSNOW = "https://www.meizu.cn/now/"
-    BBSHOT = "https://www.meizu.cn/hot/"
+    BBSNOW = "https://www.meizu.cn/now"
+    BBSHOT = "https://www.meizu.cn/hot"
     CARE = "https://care.meizu.com/"
     FLYME = "https://www.flyme.cn/"
     INTRODUCE = "https://www.meizu.cn/introduce/"
